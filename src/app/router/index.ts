@@ -19,8 +19,9 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore()
+  await auth.init()
 
   if (to.name === ROUTE_NAME.LOGIN && auth.isAuthenticated) {
     return { name: ROUTE_NAME.DASHBOARD }

@@ -7,7 +7,7 @@ export const login = async (input: LoginRequest) => {
 }
 
 export const refresh = async () => {
-  const { data } = await http.post<AuthResponse>('/auth/refresh', null, { skipAuth: true })
+  const { data } = await http.post<AuthResponse>('/auth/refresh', undefined, { skipAuth: true })
   return data
 }
 

@@ -15,4 +15,4 @@ configureAuth({
   onUnauthorized: () => auth.refresh(),
 })
 
-auth.refresh().finally(() => app.mount('#app'))
+auth.init().finally(() => app.mount('#app'))

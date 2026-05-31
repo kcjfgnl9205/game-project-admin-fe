@@ -29,6 +29,12 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => user.value?.role === ADMIN_ROLE)
 
   let refreshPromise: Promise<string | null> | null = null
+  let initPromise: Promise<unknown> | null = null
+
+  const init = () => {
+    if (initPromise === null) initPromise = refresh()
+    return initPromise
+  }
 
   const clearSession = () => {
     accessToken.value = null
@@ -76,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
         accessToken.value = token
         try {
           await loadMe()
-        } catch {
+        } catch (e) {
           clearSession()
           return null
         }
@@ -85,7 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
           return null
         }
         return token
-      } catch {
+      } catch (e) {
         clearSession()
         return null
       } finally {
@@ -111,6 +117,7 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     isAuthenticated,
     isAdmin,
+    init,
     login,
     refresh,
     logout,
