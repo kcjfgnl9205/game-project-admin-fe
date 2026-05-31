@@ -1,14 +1,27 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 import BaseBadge from '@/shared/ui/BaseBadge.vue'
 import { getDashboardSnapshot } from '@/shared/lib/dashboard'
+import { fetchNotices } from '@/entities/notice/api'
 
 const dashboard = getDashboardSnapshot()
-const stats = [
+const noticeTotal = ref(0)
+
+onMounted(async () => {
+  try {
+    const res = await fetchNotices({ limit: 1 })
+    noticeTotal.value = res.total
+  } catch {
+    // dashboard stat — silently fail
+  }
+})
+
+const stats = computed(() => [
   { label: '전체 방', value: dashboard.roomsCount, tone: 'brand' },
   { label: '활성 사용자', value: dashboard.activeUsers, tone: 'neutral' },
-  { label: '대기 중인 공지', value: dashboard.pendingNotices, tone: 'warning' },
+  { label: '공지사항', value: noticeTotal.value, tone: 'warning' },
   { label: '열린 방', value: dashboard.openRooms, tone: 'brand' },
-] as const
+])
 </script>
 
 <template>

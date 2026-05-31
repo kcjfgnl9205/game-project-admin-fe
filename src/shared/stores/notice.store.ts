@@ -1,57 +1,82 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import type { Notice, NoticeRequest } from '@/entities/notice/model'
+import { computed, ref } from 'vue'
+import {
+  fetchNotices,
+  createNotice as apiCreate,
+  updateNotice as apiUpdate,
+  deleteNotice as apiDelete,
+} from '@/entities/notice/api'
+import type { Notice, NoticeRequest, NoticeUpdateRequest } from '@/entities/notice/model'
+import { ApiError } from '@/shared/api'
 
-const today = () => new Date().toISOString().slice(0, 10)
+const messageFrom = (e: unknown, fallback: string) => {
+  if (e instanceof ApiError) {
+    const body = e.body as { message?: string } | undefined
+    return body?.message ?? e.statusText ?? fallback
+  }
+  if (e instanceof Error) return e.message
+  return fallback
+}
 
 export const useNoticeStore = defineStore('notice', () => {
-  const notices = ref<Notice[]>([
-    {
-      id: 'N-001',
-      title: '서버 점검이 03:00에 예정되어 있습니다.',
-      content: '서버 안정성 향상을 위한 정기 점검이 예정되어 있습니다. 점검 중에는 서비스 이용이 제한됩니다.',
-      published: true,
-      createdAt: '2026-05-21',
-    },
-    {
-      id: 'N-002',
-      title: '새 게임 모드가 추가되었습니다.',
-      content: '신규 미니게임이 곧 공개됩니다. 많은 관심 부탁드립니다.',
-      published: true,
-      createdAt: '2026-05-24',
-    },
-    {
-      id: 'N-003',
-      title: '비밀번호 정책이 강화되었습니다.',
-      content: '보안 강화를 위해 비밀번호 정책이 변경되었습니다. 새로운 비밀번호 규칙을 확인해 주세요.',
-      published: true,
-      createdAt: '2026-05-19',
-    },
-  ])
+  const notices = ref<Notice[]>([])
+  const total = ref(0)
+  const page = ref(1)
+  const limit = ref(20)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-  let nextId = notices.value.length + 1
+  const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
 
-  const create = (input: NoticeRequest) => {
-    notices.value.unshift({
-      id: `N-${String(nextId++).padStart(3, '0')}`,
-      title: input.title,
-      content: input.content,
-      published: true,
-      createdAt: today(),
-    })
+  const fetchList = async () => {
+    loading.value = true
+    error.value = null
+    try {
+      const res = await fetchNotices({ page: page.value, limit: limit.value })
+      notices.value = res.items
+      total.value = res.total
+    } catch (e) {
+      error.value = messageFrom(e, '공지를 불러오지 못했어요.')
+    } finally {
+      loading.value = false
+    }
   }
 
-  const update = (id: string, input: NoticeRequest) => {
-    const target = notices.value.find((n) => n.id === id)
-    if (!target) return
-    target.title = input.title
-    target.content = input.content
+  const setPage = (next: number) => {
+    if (next < 1 || next > totalPages.value || next === page.value) return
+    page.value = next
+    return fetchList()
   }
 
-  const remove = (id: string) => {
-    const index = notices.value.findIndex((n) => n.id === id)
-    if (index !== -1) notices.value.splice(index, 1)
+  const create = async (input: NoticeRequest) => {
+    await apiCreate(input)
+    page.value = 1
+    await fetchList()
   }
 
-  return { notices, create, update, remove }
+  const update = async (id: string, input: NoticeUpdateRequest) => {
+    await apiUpdate(id, input)
+    await fetchList()
+  }
+
+  const remove = async (id: string) => {
+    await apiDelete(id)
+    if (notices.value.length === 1 && page.value > 1) page.value -= 1
+    await fetchList()
+  }
+
+  return {
+    notices,
+    total,
+    page,
+    limit,
+    loading,
+    error,
+    totalPages,
+    fetchList,
+    setPage,
+    create,
+    update,
+    remove,
+  }
 })

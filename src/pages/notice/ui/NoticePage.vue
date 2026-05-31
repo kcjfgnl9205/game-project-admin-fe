@@ -1,21 +1,25 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import BaseButton from '@/shared/ui/BaseButton.vue'
 import { ConfirmDialog } from '@/shared/ui-modal'
 import { useModalStore, useNoticeStore } from '@/shared/stores'
 import type { Notice, NoticeRequest } from '@/entities/notice/model'
+import { formatDateYYYYMMDD } from '@/shared/lib/date'
 import NoticeFormModal from './NoticeFormModal.vue'
 
 const noticeStore = useNoticeStore()
 const modal = useModalStore()
 
+onMounted(() => noticeStore.fetchList())
+
 const onCreate = async () => {
   const result = await modal.open<NoticeRequest | null>(NoticeFormModal, {})
-  if (result) noticeStore.create(result)
+  if (result) await noticeStore.create(result)
 }
 
 const onEdit = async (notice: Notice) => {
   const result = await modal.open<NoticeRequest | null>(NoticeFormModal, { notice })
-  if (result) noticeStore.update(notice.id, result)
+  if (result) await noticeStore.update(notice.id, result)
 }
 
 const onDelete = async (notice: Notice) => {
@@ -24,7 +28,7 @@ const onDelete = async (notice: Notice) => {
     message: `"${notice.title}" 공지를 정말 삭제하시겠어요?`,
     confirmText: '삭제',
   })
-  if (ok) noticeStore.remove(notice.id)
+  if (ok) await noticeStore.remove(notice.id)
 }
 </script>
 
@@ -38,9 +42,26 @@ const onDelete = async (notice: Notice) => {
       <BaseButton variant="primary" @click="onCreate">+ 공지 등록</BaseButton>
     </div>
 
+    <div
+      v-if="noticeStore.error"
+      class="rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning"
+    >
+      {{ noticeStore.error }}
+      <button
+        type="button"
+        class="ml-2 underline underline-offset-2"
+        @click="noticeStore.fetchList()"
+      >
+        다시 시도
+      </button>
+    </div>
+
     <div class="overflow-hidden rounded-3xl border border-border bg-bg-card">
+      <div v-if="noticeStore.loading" class="p-12 text-center text-sm text-text-secondary">
+        불러오는 중…
+      </div>
       <div
-        v-if="noticeStore.notices.length === 0"
+        v-else-if="noticeStore.notices.length === 0"
         class="p-12 text-center text-sm text-text-secondary"
       >
         등록된 공지가 없습니다.
@@ -59,7 +80,10 @@ const onDelete = async (notice: Notice) => {
               >
                 {{ notice.content }}
               </p>
-              <p class="mt-3 text-xs text-text-muted">{{ notice.createdAt }}</p>
+              <p class="mt-3 text-xs text-text-muted">
+                {{ notice.author?.nickname ?? '관리자' }} ·
+                {{ formatDateYYYYMMDD(notice.createdAt) }}
+              </p>
             </div>
             <div class="flex shrink-0 gap-2">
               <BaseButton variant="secondary" size="sm" @click="onEdit(notice)">수정</BaseButton>
@@ -68,6 +92,33 @@ const onDelete = async (notice: Notice) => {
           </div>
         </li>
       </ul>
+    </div>
+
+    <div
+      v-if="noticeStore.total > 0"
+      class="flex items-center justify-between text-sm text-text-secondary"
+    >
+      <span>
+        총 {{ noticeStore.total }}건 · {{ noticeStore.page }} / {{ noticeStore.totalPages }} 페이지
+      </span>
+      <div class="flex gap-2">
+        <BaseButton
+          variant="secondary"
+          size="sm"
+          :disabled="noticeStore.page <= 1 || noticeStore.loading"
+          @click="noticeStore.setPage(noticeStore.page - 1)"
+        >
+          이전
+        </BaseButton>
+        <BaseButton
+          variant="secondary"
+          size="sm"
+          :disabled="noticeStore.page >= noticeStore.totalPages || noticeStore.loading"
+          @click="noticeStore.setPage(noticeStore.page + 1)"
+        >
+          다음
+        </BaseButton>
+      </div>
     </div>
   </div>
 </template>

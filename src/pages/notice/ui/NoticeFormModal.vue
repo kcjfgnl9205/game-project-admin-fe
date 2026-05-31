@@ -41,7 +41,7 @@ const onSubmit = () => {
           v-model="title"
           type="text"
           required
-          maxlength="100"
+          maxlength="200"
           placeholder="제목을 입력하세요"
           class="w-full rounded-lg border border-border-strong bg-bg px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-brand"
         />
