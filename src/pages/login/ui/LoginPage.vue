@@ -7,20 +7,19 @@ import { ROUTE_NAME } from '@/app/router/router-name'
 
 const router = useRouter()
 const auth = useAuthStore()
-const username = ref('')
+const email = ref('')
 const password = ref('')
-const errorMessage = ref('')
+const submitting = ref(false)
 
 const handleSubmit = async () => {
-  errorMessage.value = ''
-  const success = await auth.login(username.value, password.value)
-
-  if (!success) {
-    errorMessage.value = auth.error ?? '로그인에 실패했습니다.'
-    return
+  if (submitting.value) return
+  submitting.value = true
+  try {
+    const ok = await auth.login({ email: email.value.trim(), password: password.value })
+    if (ok) await router.push({ name: ROUTE_NAME.DASHBOARD })
+  } finally {
+    submitting.value = false
   }
-
-  await router.push({ name: ROUTE_NAME.DASHBOARD })
 }
 </script>
 
@@ -35,12 +34,14 @@ const handleSubmit = async () => {
 
       <form class="space-y-6" @submit.prevent="handleSubmit">
         <div class="space-y-2">
-          <label class="block text-sm font-medium text-text-secondary">아이디</label>
+          <label class="block text-sm font-medium text-text-secondary">이메일</label>
           <input
-            v-model="username"
+            v-model="email"
+            type="email"
+            required
             class="w-full rounded-3xl border border-border bg-bg px-4 py-4 text-base text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
-            autocomplete="username"
-            placeholder="admin"
+            autocomplete="email"
+            placeholder="admin@puzmu.com"
           />
         </div>
 
@@ -49,6 +50,7 @@ const handleSubmit = async () => {
           <input
             v-model="password"
             type="password"
+            required
             class="w-full rounded-3xl border border-border bg-bg px-4 py-4 text-base text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
             autocomplete="current-password"
             placeholder="••••••••"
@@ -56,8 +58,10 @@ const handleSubmit = async () => {
         </div>
 
         <div class="space-y-3">
-          <BaseButton type="submit" class="w-full">로그인</BaseButton>
-          <p v-if="errorMessage" class="text-sm text-warning">{{ errorMessage }}</p>
+          <BaseButton type="submit" class="w-full" :disabled="submitting">
+            {{ submitting ? '로그인 중…' : '로그인' }}
+          </BaseButton>
+          <p v-if="auth.error" class="text-sm text-warning">{{ auth.error }}</p>
         </div>
       </form>
     </section>

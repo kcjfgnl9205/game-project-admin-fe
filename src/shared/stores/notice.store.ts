@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Notice, NoticeInput } from '@/entities/notice/model'
+import type { Notice, NoticeRequest } from '@/entities/notice/model'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -31,7 +31,7 @@ export const useNoticeStore = defineStore('notice', () => {
 
   let nextId = notices.value.length + 1
 
-  const create = (input: NoticeInput) => {
+  const create = (input: NoticeRequest) => {
     notices.value.unshift({
       id: `N-${String(nextId++).padStart(3, '0')}`,
       title: input.title,
@@ -41,7 +41,7 @@ export const useNoticeStore = defineStore('notice', () => {
     })
   }
 
-  const update = (id: string, input: NoticeInput) => {
+  const update = (id: string, input: NoticeRequest) => {
     const target = notices.value.find((n) => n.id === id)
     if (!target) return
     target.title = input.title

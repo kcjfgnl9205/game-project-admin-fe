@@ -1,64 +1,118 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { computed, ref } from 'vue'
+import {
+  login as apiLogin,
+  refresh as apiRefresh,
+  logout as apiLogout,
+  fetchMe,
+} from '@/entities/auth/api'
+import type { LoginRequest, User } from '@/entities/auth/model'
+import { ApiError } from '@/shared/api'
 
-const STORAGE_KEY = 'admin-auth'
+const ADMIN_ROLE = 'ADMIN'
+
+const messageFrom = (e: unknown, fallback: string) => {
+  if (e instanceof ApiError) {
+    const body = e.body as { message?: string } | undefined
+    return body?.message ?? e.statusText ?? fallback
+  }
+  if (e instanceof Error) return e.message
+  return fallback
+}
 
 export const useAuthStore = defineStore('auth', () => {
-  const isAuthenticated = ref(false)
-  const username = ref('')
+  const accessToken = ref<string | null>(null)
+  const user = ref<User | null>(null)
   const error = ref<string | null>(null)
 
-  const stored = localStorage.getItem(STORAGE_KEY)
-  if (stored) {
-    try {
-      const parsed = JSON.parse(stored)
-      if (parsed?.username) {
-        username.value = parsed.username
-        isAuthenticated.value = true
-      }
-    } catch {
-      localStorage.removeItem(STORAGE_KEY)
-    }
+  const isAuthenticated = computed(() => accessToken.value !== null)
+  const isAdmin = computed(() => user.value?.role === ADMIN_ROLE)
+
+  let refreshPromise: Promise<string | null> | null = null
+
+  const clearSession = () => {
+    accessToken.value = null
+    user.value = null
   }
 
-  watch(
-    [isAuthenticated, username],
-    ([auth, user]) => {
-      if (auth) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ username: user }))
-      } else {
-        localStorage.removeItem(STORAGE_KEY)
+  const loadMe = async () => {
+    user.value = await fetchMe()
+  }
+
+  const rejectNonAdmin = async () => {
+    try {
+      await apiLogout()
+    } catch {
+      // ignore — best-effort invalidation of refresh cookie
+    }
+    clearSession()
+    error.value = '관리자 권한이 없습니다.'
+  }
+
+  const login = async (input: LoginRequest) => {
+    error.value = null
+    try {
+      const { accessToken: token } = await apiLogin(input)
+      accessToken.value = token
+      await loadMe()
+      if (!isAdmin.value) {
+        await rejectNonAdmin()
+        return false
       }
-    },
-    { flush: 'sync' },
-  )
-
-  const login = async (nextUsername: string, password: string) => {
-    const trimmed = nextUsername.trim()
-    const isValid = trimmed.toLowerCase() === 'admin' && password === 'admin'
-
-    if (!isValid) {
-      error.value = '아이디 또는 비밀번호가 일치하지 않습니다.'
+      return true
+    } catch (e) {
+      error.value = messageFrom(e, '로그인에 실패했습니다.')
+      clearSession()
       return false
     }
-
-    username.value = trimmed
-    isAuthenticated.value = true
-    error.value = null
-    return true
   }
 
-  const logout = () => {
-    isAuthenticated.value = false
-    username.value = ''
-    error.value = null
+  const refresh = async (): Promise<string | null> => {
+    if (refreshPromise) return refreshPromise
+
+    refreshPromise = (async () => {
+      try {
+        const { accessToken: token } = await apiRefresh()
+        accessToken.value = token
+        try {
+          await loadMe()
+        } catch {
+          clearSession()
+          return null
+        }
+        if (!isAdmin.value) {
+          clearSession()
+          return null
+        }
+        return token
+      } catch {
+        clearSession()
+        return null
+      } finally {
+        refreshPromise = null
+      }
+    })()
+
+    return refreshPromise
+  }
+
+  const logout = async () => {
+    try {
+      await apiLogout()
+    } catch {
+      // ignore — clear session regardless
+    }
+    clearSession()
   }
 
   return {
-    isAuthenticated,
-    username,
+    accessToken,
+    user,
     error,
+    isAuthenticated,
+    isAdmin,
     login,
+    refresh,
     logout,
   }
 })

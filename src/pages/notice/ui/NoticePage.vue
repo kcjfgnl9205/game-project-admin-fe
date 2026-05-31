@@ -2,19 +2,19 @@
 import BaseButton from '@/shared/ui/BaseButton.vue'
 import { ConfirmDialog } from '@/shared/ui-modal'
 import { useModalStore, useNoticeStore } from '@/shared/stores'
-import type { Notice, NoticeInput } from '@/entities/notice/model'
+import type { Notice, NoticeRequest } from '@/entities/notice/model'
 import NoticeFormModal from './NoticeFormModal.vue'
 
 const noticeStore = useNoticeStore()
 const modal = useModalStore()
 
 const onCreate = async () => {
-  const result = await modal.open<NoticeInput | null>(NoticeFormModal, {})
+  const result = await modal.open<NoticeRequest | null>(NoticeFormModal, {})
   if (result) noticeStore.create(result)
 }
 
 const onEdit = async (notice: Notice) => {
-  const result = await modal.open<NoticeInput | null>(NoticeFormModal, { notice })
+  const result = await modal.open<NoticeRequest | null>(NoticeFormModal, { notice })
   if (result) noticeStore.update(notice.id, result)
 }
 

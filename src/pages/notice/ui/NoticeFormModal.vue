@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import BaseButton from '@/shared/ui/BaseButton.vue'
 import { useModalStore } from '@/shared/stores'
-import type { Notice, NoticeInput } from '@/entities/notice/model'
+import type { Notice, NoticeRequest } from '@/entities/notice/model'
 
 interface Props {
   modalId: number
@@ -18,7 +18,7 @@ const onSubmit = () => {
   const t = title.value.trim()
   const c = content.value.trim()
   if (!t || !c) return
-  modal.close(props.modalId, { title: t, content: c } satisfies NoticeInput)
+  modal.close(props.modalId, { title: t, content: c } satisfies NoticeRequest)
 }
 </script>
 

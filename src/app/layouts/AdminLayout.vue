@@ -20,8 +20,8 @@ const pageTitle = computed(() => titleMap[String(route.name)] ?? String(route.na
 const openSidebar = () => (showSidebar.value = true)
 const closeSidebar = () => (showSidebar.value = false)
 
-const handleLogout = () => {
-  auth.logout()
+const handleLogout = async () => {
+  await auth.logout()
   router.push({ name: ROUTE_NAME.LOGIN })
 }
 </script>
@@ -73,7 +73,7 @@ const handleLogout = () => {
           </div>
 
           <div class="flex items-center gap-3">
-            <span class="text-sm text-text-secondary">{{ auth.username || '관리자' }}님</span>
+            <span class="text-sm text-text-secondary">{{ auth.user?.nickname || '관리자' }}님</span>
             <BaseButton variant="secondary" size="sm" @click="handleLogout">로그아웃</BaseButton>
           </div>
         </div>

@@ -6,7 +6,7 @@ export interface Notice {
   createdAt: string
 }
 
-export interface NoticeInput {
+export interface NoticeRequest {
   title: string
   content: string
 }

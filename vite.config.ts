@@ -24,12 +24,5 @@ export default defineConfig({
     port: 5173,
     allowedHosts: [DEV_DOMAIN, 'localhost'],
     https: hasCert ? { key: readFileSync(keyPath), cert: readFileSync(certPath) } : undefined,
-    proxy: {
-      '/api': {
-        target: 'https://dev-api.puzmu.com',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
   },
 })
