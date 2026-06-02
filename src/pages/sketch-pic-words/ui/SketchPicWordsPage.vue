@@ -3,36 +3,26 @@ import { onMounted } from 'vue'
 import BaseButton from '@/shared/ui/BaseButton.vue'
 import { ConfirmDialog } from '@/shared/ui-modal'
 import { useModalStore, useSketchPicWordStore } from '@/shared/stores'
+import { useToast } from '@/shared/composables'
 import type { SketchPicWord, SketchPicWordRequest } from '@/entities/sketch-pic-word/model'
 import { formatDateYYYYMMDD } from '@/shared/lib/date'
-import { ApiError } from '@/shared/api'
 import WordFormModal from './WordFormModal.vue'
 import WordBulkModal from './WordBulkModal.vue'
 
 const store = useSketchPicWordStore()
 const modal = useModalStore()
+const toast = useToast()
 
 onMounted(() => store.fetchList())
-
-const messageFrom = (e: unknown, fallback: string) => {
-  if (e instanceof ApiError) {
-    const body = e.body as { message?: string } | undefined
-    return body?.message ?? e.statusText ?? fallback
-  }
-  return fallback
-}
 
 const onCreate = async () => {
   const result = await modal.open<SketchPicWordRequest | null>(WordFormModal, {})
   if (!result) return
   try {
     await store.create(result)
+    toast.success('단어가 등록되었어요.')
   } catch (e) {
-    await modal.open(ConfirmDialog, {
-      title: '등록 실패',
-      message: messageFrom(e, '단어 등록에 실패했어요.'),
-      confirmText: '확인',
-    })
+    toast.error(e, '단어 등록에 실패했어요.')
   }
 }
 
@@ -41,17 +31,9 @@ const onBulkCreate = async () => {
   if (!result || result.length === 0) return
   try {
     const res = await store.bulkCreate({ words: result })
-    await modal.open(ConfirmDialog, {
-      title: '일괄 등록 완료',
-      message: `추가됨 ${res.inserted}개, 중복으로 건너뜀 ${res.skipped}개`,
-      confirmText: '확인',
-    })
+    toast.success(`추가 ${res.inserted}개, 건너뜀 ${res.skipped}개`)
   } catch (e) {
-    await modal.open(ConfirmDialog, {
-      title: '등록 실패',
-      message: messageFrom(e, '일괄 등록에 실패했어요.'),
-      confirmText: '확인',
-    })
+    toast.error(e, '일괄 등록에 실패했어요.')
   }
 }
 
@@ -60,12 +42,9 @@ const onEdit = async (word: SketchPicWord) => {
   if (!result) return
   try {
     await store.update(word.id, result)
+    toast.success('수정되었어요.')
   } catch (e) {
-    await modal.open(ConfirmDialog, {
-      title: '수정 실패',
-      message: messageFrom(e, '단어 수정에 실패했어요.'),
-      confirmText: '확인',
-    })
+    toast.error(e, '단어 수정에 실패했어요.')
   }
 }
 
@@ -75,7 +54,13 @@ const onDelete = async (word: SketchPicWord) => {
     message: `"${word.word}" 단어를 삭제하시겠어요?`,
     confirmText: '삭제',
   })
-  if (ok) await store.remove(word.id)
+  if (!ok) return
+  try {
+    await store.remove(word.id)
+    toast.success('삭제되었어요.')
+  } catch (e) {
+    toast.error(e, '단어 삭제에 실패했어요.')
+  }
 }
 </script>
 
@@ -90,20 +75,6 @@ const onDelete = async (word: SketchPicWord) => {
         <BaseButton variant="secondary" @click="onBulkCreate">일괄 등록</BaseButton>
         <BaseButton variant="primary" @click="onCreate">+ 단어 등록</BaseButton>
       </div>
-    </div>
-
-    <div
-      v-if="store.error"
-      class="rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning"
-    >
-      {{ store.error }}
-      <button
-        type="button"
-        class="ml-2 underline underline-offset-2"
-        @click="store.fetchList()"
-      >
-        다시 시도
-      </button>
     </div>
 
     <div class="overflow-hidden rounded-3xl border border-border bg-bg-card">

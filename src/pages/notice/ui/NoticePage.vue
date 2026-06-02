@@ -3,23 +3,37 @@ import { onMounted } from 'vue'
 import BaseButton from '@/shared/ui/BaseButton.vue'
 import { ConfirmDialog } from '@/shared/ui-modal'
 import { useModalStore, useNoticeStore } from '@/shared/stores'
+import { useToast } from '@/shared/composables'
 import type { Notice, NoticeRequest } from '@/entities/notice/model'
 import { formatDateYYYYMMDD } from '@/shared/lib/date'
 import NoticeFormModal from './NoticeFormModal.vue'
 
 const noticeStore = useNoticeStore()
 const modal = useModalStore()
+const toast = useToast()
 
 onMounted(() => noticeStore.fetchList())
 
 const onCreate = async () => {
   const result = await modal.open<NoticeRequest | null>(NoticeFormModal, {})
-  if (result) await noticeStore.create(result)
+  if (!result) return
+  try {
+    await noticeStore.create(result)
+    toast.success('공지가 등록되었어요.')
+  } catch (e) {
+    toast.error(e, '공지 등록에 실패했어요.')
+  }
 }
 
 const onEdit = async (notice: Notice) => {
   const result = await modal.open<NoticeRequest | null>(NoticeFormModal, { notice })
-  if (result) await noticeStore.update(notice.id, result)
+  if (!result) return
+  try {
+    await noticeStore.update(notice.id, result)
+    toast.success('수정되었어요.')
+  } catch (e) {
+    toast.error(e, '공지 수정에 실패했어요.')
+  }
 }
 
 const onDelete = async (notice: Notice) => {
@@ -28,7 +42,13 @@ const onDelete = async (notice: Notice) => {
     message: `"${notice.title}" 공지를 정말 삭제하시겠어요?`,
     confirmText: '삭제',
   })
-  if (ok) await noticeStore.remove(notice.id)
+  if (!ok) return
+  try {
+    await noticeStore.remove(notice.id)
+    toast.success('삭제되었어요.')
+  } catch (e) {
+    toast.error(e, '공지 삭제에 실패했어요.')
+  }
 }
 </script>
 
@@ -40,20 +60,6 @@ const onDelete = async (notice: Notice) => {
         <p class="mt-1 text-sm text-text-secondary">공지 목록을 등록/수정/삭제하세요.</p>
       </div>
       <BaseButton variant="primary" @click="onCreate">+ 공지 등록</BaseButton>
-    </div>
-
-    <div
-      v-if="noticeStore.error"
-      class="rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning"
-    >
-      {{ noticeStore.error }}
-      <button
-        type="button"
-        class="ml-2 underline underline-offset-2"
-        @click="noticeStore.fetchList()"
-      >
-        다시 시도
-      </button>
     </div>
 
     <div class="overflow-hidden rounded-3xl border border-border bg-bg-card">

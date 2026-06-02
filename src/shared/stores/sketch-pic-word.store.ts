@@ -13,36 +13,28 @@ import type {
   SketchPicWordBulkRequest,
   SketchPicWordBulkResponse,
 } from '@/entities/sketch-pic-word/model'
-import { ApiError } from '@/shared/api'
-
-const messageFrom = (e: unknown, fallback: string) => {
-  if (e instanceof ApiError) {
-    const body = e.body as { message?: string } | undefined
-    return body?.message ?? e.statusText ?? fallback
-  }
-  if (e instanceof Error) return e.message
-  return fallback
-}
+import { messageFrom } from '@/shared/lib/error-message'
+import { useToastStore } from './toast.store'
 
 export const useSketchPicWordStore = defineStore('sketch-pic-word', () => {
+  const toast = useToastStore()
+
   const words = ref<SketchPicWord[]>([])
   const total = ref(0)
   const page = ref(1)
   const limit = ref(20)
   const loading = ref(false)
-  const error = ref<string | null>(null)
 
   const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
 
   const fetchList = async () => {
     loading.value = true
-    error.value = null
     try {
       const res = await fetchSketchPicWords({ page: page.value, limit: limit.value })
       words.value = res.items
       total.value = res.total
     } catch (e) {
-      error.value = messageFrom(e, '단어를 불러오지 못했어요.')
+      toast.show('error', messageFrom(e, '단어를 불러오지 못했어요.'))
     } finally {
       loading.value = false
     }
@@ -86,7 +78,6 @@ export const useSketchPicWordStore = defineStore('sketch-pic-word', () => {
     page,
     limit,
     loading,
-    error,
     totalPages,
     fetchList,
     setPage,

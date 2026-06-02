@@ -7,36 +7,28 @@ import {
   deleteNotice as apiDelete,
 } from '@/entities/notice/api'
 import type { Notice, NoticeRequest, NoticeUpdateRequest } from '@/entities/notice/model'
-import { ApiError } from '@/shared/api'
-
-const messageFrom = (e: unknown, fallback: string) => {
-  if (e instanceof ApiError) {
-    const body = e.body as { message?: string } | undefined
-    return body?.message ?? e.statusText ?? fallback
-  }
-  if (e instanceof Error) return e.message
-  return fallback
-}
+import { messageFrom } from '@/shared/lib/error-message'
+import { useToastStore } from './toast.store'
 
 export const useNoticeStore = defineStore('notice', () => {
+  const toast = useToastStore()
+
   const notices = ref<Notice[]>([])
   const total = ref(0)
   const page = ref(1)
   const limit = ref(20)
   const loading = ref(false)
-  const error = ref<string | null>(null)
 
   const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
 
   const fetchList = async () => {
     loading.value = true
-    error.value = null
     try {
       const res = await fetchNotices({ page: page.value, limit: limit.value })
       notices.value = res.items
       total.value = res.total
     } catch (e) {
-      error.value = messageFrom(e, '공지를 불러오지 못했어요.')
+      toast.show('error', messageFrom(e, '공지를 불러오지 못했어요.'))
     } finally {
       loading.value = false
     }
@@ -71,7 +63,6 @@ export const useNoticeStore = defineStore('notice', () => {
     page,
     limit,
     loading,
-    error,
     totalPages,
     fetchList,
     setPage,

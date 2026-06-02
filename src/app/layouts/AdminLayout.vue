@@ -29,10 +29,12 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-bg text-text-primary">
-    <div class="flex min-h-screen">
+  <div class="h-screen bg-bg text-text-primary">
+    <div class="flex h-screen">
       <!-- Desktop sidebar -->
-      <aside class="hidden md:block w-80 border-r border-border bg-bg-card px-6 py-8">
+      <aside
+        class="hidden md:block w-80 shrink-0 overflow-y-auto border-r border-border bg-bg-card px-6 py-8"
+      >
         <AdminSidebar />
       </aside>
 
@@ -40,7 +42,7 @@ const handleLogout = async () => {
       <transition name="fade">
         <div v-if="showSidebar" class="fixed inset-0 z-50 flex md:hidden" aria-hidden="false">
           <div class="absolute inset-0 bg-black/40" @click="closeSidebar"></div>
-          <div class="relative w-72 border-r border-border bg-bg-card p-6">
+          <div class="relative w-72 overflow-y-auto border-r border-border bg-bg-card p-6">
             <div class="mb-4 flex items-center justify-between">
               <div>
                 <p class="text-sm font-semibold">관리자 메뉴</p>
@@ -52,8 +54,8 @@ const handleLogout = async () => {
         </div>
       </transition>
 
-      <div class="flex-1 bg-bg py-6">
-        <div class="mb-6 flex items-center justify-between border-b border-border pb-4 px-6">
+      <div class="flex flex-1 flex-col overflow-hidden bg-bg">
+        <div class="flex shrink-0 items-center justify-between border-b border-border px-6 py-4">
           <div class="flex items-center gap-4">
             <button
               class="inline-flex items-center justify-center rounded-md p-2 text-text-secondary md:hidden"
@@ -80,7 +82,7 @@ const handleLogout = async () => {
           </div>
         </div>
 
-        <main class="px-6">
+        <main class="flex-1 overflow-y-auto px-6 py-6">
           <RouterView />
         </main>
       </div>

@@ -57,12 +57,9 @@ const handleSubmit = async () => {
           />
         </div>
 
-        <div class="space-y-3">
-          <BaseButton type="submit" class="w-full" :disabled="submitting">
-            {{ submitting ? '로그인 중…' : '로그인' }}
-          </BaseButton>
-          <p v-if="auth.error" class="text-sm text-warning">{{ auth.error }}</p>
-        </div>
+        <BaseButton type="submit" class="w-full" :disabled="submitting">
+          {{ submitting ? '로그인 중…' : '로그인' }}
+        </BaseButton>
       </form>
     </section>
   </div>

@@ -7,23 +7,16 @@ import {
   fetchMe,
 } from '@/entities/auth/api'
 import type { LoginRequest, User } from '@/entities/auth/model'
-import { ApiError } from '@/shared/api'
+import { messageFrom } from '@/shared/lib/error-message'
+import { useToastStore } from './toast.store'
 
 const ADMIN_ROLE = 'ADMIN'
 
-const messageFrom = (e: unknown, fallback: string) => {
-  if (e instanceof ApiError) {
-    const body = e.body as { message?: string } | undefined
-    return body?.message ?? e.statusText ?? fallback
-  }
-  if (e instanceof Error) return e.message
-  return fallback
-}
-
 export const useAuthStore = defineStore('auth', () => {
+  const toast = useToastStore()
+
   const accessToken = ref<string | null>(null)
   const user = ref<User | null>(null)
-  const error = ref<string | null>(null)
 
   const isAuthenticated = computed(() => accessToken.value !== null)
   const isAdmin = computed(() => user.value?.role === ADMIN_ROLE)
@@ -52,11 +45,10 @@ export const useAuthStore = defineStore('auth', () => {
       // ignore — best-effort invalidation of refresh cookie
     }
     clearSession()
-    error.value = '관리자 권한이 없습니다.'
+    toast.show('error', '관리자 권한이 없습니다.')
   }
 
   const login = async (input: LoginRequest) => {
-    error.value = null
     try {
       const { accessToken: token } = await apiLogin(input)
       accessToken.value = token
@@ -67,7 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
       return true
     } catch (e) {
-      error.value = messageFrom(e, '로그인에 실패했습니다.')
+      toast.show('error', messageFrom(e, '로그인에 실패했습니다.'))
       clearSession()
       return false
     }
@@ -82,7 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
         accessToken.value = token
         try {
           await loadMe()
-        } catch (e) {
+        } catch {
           clearSession()
           return null
         }
@@ -91,7 +83,7 @@ export const useAuthStore = defineStore('auth', () => {
           return null
         }
         return token
-      } catch (e) {
+      } catch {
         clearSession()
         return null
       } finally {
@@ -114,7 +106,6 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     accessToken,
     user,
-    error,
     isAuthenticated,
     isAdmin,
     init,
