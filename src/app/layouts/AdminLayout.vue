@@ -14,6 +14,8 @@ const route = useRoute()
 const titleMap: Record<string, string> = {
   [ROUTE_NAME.DASHBOARD]: '대시보드',
   [ROUTE_NAME.NOTICE]: '공지사항',
+  [ROUTE_NAME.SKETCH_PIC_ROOM]: '스케치픽 · 방정보',
+  [ROUTE_NAME.SKETCH_PIC_WORDS]: '스케치픽 · 단어 설정',
 }
 const pageTitle = computed(() => titleMap[String(route.name)] ?? String(route.name ?? '관리자'))
 

@@ -19,13 +19,3 @@ export interface NoticeUpdateRequest {
   title?: string
   content?: string
 }
-
-export interface NoticeListParams {
-  page?: number
-  limit?: number
-}
-
-export interface NoticeListResponse {
-  total: number
-  items: Notice[]
-}

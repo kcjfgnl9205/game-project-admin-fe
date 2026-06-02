@@ -1,14 +1,9 @@
 import { http } from '@/shared/api'
-import type {
-  Notice,
-  NoticeListParams,
-  NoticeListResponse,
-  NoticeRequest,
-  NoticeUpdateRequest,
-} from './model'
+import type { PaginatedResponse, PaginationParams } from '@/shared/lib/pagination'
+import type { Notice, NoticeRequest, NoticeUpdateRequest } from './model'
 
-export const fetchNotices = async (params: NoticeListParams = {}) => {
-  const { data } = await http.get<NoticeListResponse>('/notices', { params })
+export const fetchNotices = async (params: PaginationParams = {}) => {
+  const { data } = await http.get<PaginatedResponse<Notice>>('/notices', { params })
   return data
 }
 

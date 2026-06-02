@@ -1,4 +1,5 @@
 export { useModalStore } from './modal.store'
 export { useAuthStore } from './auth.store'
 export { useNoticeStore } from './notice.store'
+export { useSketchPicWordStore } from './sketch-pic-word.store'
 export type { Modal, ModalOptions, ModalTransition } from './modal.store'
