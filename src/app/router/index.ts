@@ -5,6 +5,7 @@ import { dashboardRoute } from '@/pages/dashboard'
 import { noticeRoute } from '@/pages/notice'
 import { sketchPicRoomRoute } from '@/pages/sketch-pic-room'
 import { sketchPicWordsRoute } from '@/pages/sketch-pic-words'
+import { whoDrewWordsRoute } from '@/pages/who-drew-words'
 import { ROUTE_NAME } from '@/app/router/router-name'
 import { useAuthStore } from '@/shared/stores/auth.store'
 
@@ -16,7 +17,13 @@ const router = createRouter({
       path: '/',
       component: AdminLayout,
       meta: { requiresAuth: true },
-      children: [dashboardRoute, noticeRoute, sketchPicRoomRoute, sketchPicWordsRoute],
+      children: [
+        dashboardRoute,
+        noticeRoute,
+        sketchPicRoomRoute,
+        sketchPicWordsRoute,
+        whoDrewWordsRoute,
+      ],
     },
   ],
 })

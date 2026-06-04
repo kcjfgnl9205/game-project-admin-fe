@@ -32,6 +32,11 @@ const items: MenuItem[] = [
         ],
       },
       {
+        label: '누가그렸지',
+        key: 'who-drew',
+        children: [{ label: '단어 설정', routeName: ROUTE_NAME.WHO_DREW_WORDS }],
+      },
+      {
         label: '끝말잇기',
         key: 'word-chain',
         children: [],
