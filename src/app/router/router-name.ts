@@ -9,4 +9,8 @@ export const ROUTE_NAME = {
 
   // 누가그렸지
   WHO_DREW_WORDS: 'who-drew-words',
+
+  // 문의 관리
+  INQUIRY_CATEGORIES: 'inquiry-categories',
+  INQUIRY_LIST: 'inquiry-list',
 } as const

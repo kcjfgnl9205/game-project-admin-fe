@@ -43,6 +43,14 @@ const items: MenuItem[] = [
       },
     ],
   },
+  {
+    label: '문의 관리',
+    key: 'inquiry',
+    children: [
+      { label: '카테고리 관리', routeName: ROUTE_NAME.INQUIRY_CATEGORIES },
+      { label: '문의 목록', routeName: ROUTE_NAME.INQUIRY_LIST },
+    ],
+  },
 ]
 
 const route = useRoute()

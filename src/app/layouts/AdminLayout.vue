@@ -16,6 +16,9 @@ const titleMap: Record<string, string> = {
   [ROUTE_NAME.NOTICE]: '공지사항',
   [ROUTE_NAME.SKETCH_PIC_ROOM]: '스케치픽 · 방정보',
   [ROUTE_NAME.SKETCH_PIC_WORDS]: '스케치픽 · 단어 설정',
+  [ROUTE_NAME.WHO_DREW_WORDS]: '누가그렸지 · 단어 설정',
+  [ROUTE_NAME.INQUIRY_CATEGORIES]: '문의 · 카테고리 관리',
+  [ROUTE_NAME.INQUIRY_LIST]: '문의 · 목록',
 }
 const pageTitle = computed(() => titleMap[String(route.name)] ?? String(route.name ?? '관리자'))
 

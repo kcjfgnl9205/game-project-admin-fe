@@ -6,6 +6,7 @@ import { noticeRoute } from '@/pages/notice'
 import { sketchPicRoomRoute } from '@/pages/sketch-pic-room'
 import { sketchPicWordsRoute } from '@/pages/sketch-pic-words'
 import { whoDrewWordsRoute } from '@/pages/who-drew-words'
+import { inquiryCategoriesRoute, inquiryListRoute } from '@/pages/inquiry'
 import { ROUTE_NAME } from '@/app/router/router-name'
 import { useAuthStore } from '@/shared/stores/auth.store'
 
@@ -23,6 +24,8 @@ const router = createRouter({
         sketchPicRoomRoute,
         sketchPicWordsRoute,
         whoDrewWordsRoute,
+        inquiryCategoriesRoute,
+        inquiryListRoute,
       ],
     },
   ],
