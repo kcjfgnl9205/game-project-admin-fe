@@ -21,6 +21,8 @@ export interface Inquiry {
   status: InquiryStatus
   categoryId: string
   category: { id: string; name: string }
+  privacyConsent: boolean
+  privacyConsentAt: string | null
   createdAt: string
   updatedAt: string
 }

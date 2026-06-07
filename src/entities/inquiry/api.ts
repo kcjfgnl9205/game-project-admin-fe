@@ -53,3 +53,9 @@ export const updateInquiry = async (id: string, input: InquiryUpdateRequest) => 
 export const deleteInquiry = async (id: string) => {
   await http.delete(`${INQUIRY_BASE}/${id}`)
 }
+
+// 처리 완료 후 1년 지난 문의 이메일 일괄 null 처리
+export const purgeInquiryEmails = async () => {
+  const { data } = await http.post<{ affected: number }>(`${INQUIRY_BASE}/purge-emails`)
+  return data
+}

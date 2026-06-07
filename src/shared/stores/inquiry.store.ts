@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { fetchInquiries, updateInquiry, deleteInquiry } from '@/entities/inquiry/api'
+import {
+  fetchInquiries,
+  updateInquiry,
+  deleteInquiry,
+  purgeInquiryEmails,
+} from '@/entities/inquiry/api'
 import type { Inquiry, InquiryStatus } from '@/entities/inquiry/model'
 import { messageFrom } from '@/shared/lib/error-message'
 import { useToastStore } from './toast.store'
@@ -65,6 +70,13 @@ export const useInquiryStore = defineStore('inquiry', () => {
     await fetchList()
   }
 
+  // 보관기간(처리완료 후 1년) 만료 이메일 일괄 null 처리
+  const purgeEmails = async () => {
+    const res = await purgeInquiryEmails()
+    await fetchList()
+    return res.affected
+  }
+
   return {
     inquiries,
     total,
@@ -80,5 +92,6 @@ export const useInquiryStore = defineStore('inquiry', () => {
     setCategoryFilter,
     updateStatus,
     remove,
+    purgeEmails,
   }
 })

@@ -52,6 +52,21 @@ const onDelete = async (inquiry: Inquiry) => {
   }
 }
 
+const onPurge = async () => {
+  const ok = await modal.open<boolean>(ConfirmDialog, {
+    title: '이메일 보관기간 정리',
+    message: '처리 완료 후 1년이 지난 문의의 이메일을 일괄 삭제(null)합니다. 계속할까요?',
+    confirmText: '정리',
+  })
+  if (!ok) return
+  try {
+    const affected = await store.purgeEmails()
+    toast.success(`${affected}건의 이메일을 정리했어요.`)
+  } catch (e) {
+    toast.error(e, '이메일 정리에 실패했어요.')
+  }
+}
+
 const selectClass =
   'rounded-lg border border-border-strong bg-bg px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-brand'
 </script>
@@ -63,7 +78,8 @@ const selectClass =
         <h2 class="text-2xl font-semibold text-text-primary">문의 목록</h2>
         <p class="mt-1 text-sm text-text-secondary">접수된 문의를 확인하고 상태를 관리하세요.</p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
+        <BaseButton variant="secondary" @click="onPurge">이메일 보관기간 정리</BaseButton>
         <select :value="store.statusFilter" :class="selectClass" @change="onStatusFilter">
           <option value="">전체 상태</option>
           <option value="PENDING">미처리</option>
@@ -114,7 +130,7 @@ const selectClass =
               >
                 {{ statusLabel(inquiry.status) }}
               </span>
-              <span class="truncate">{{ inquiry.email }}</span>
+              <span class="truncate">{{ inquiry.email ?? '(보관기간 만료)' }}</span>
               <span>· {{ formatDateYYYYMMDD(inquiry.createdAt) }}</span>
             </p>
           </button>

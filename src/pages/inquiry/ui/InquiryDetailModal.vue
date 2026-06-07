@@ -46,7 +46,9 @@ const selectClass =
       </div>
       <div class="flex gap-3">
         <dt class="w-20 shrink-0 font-medium text-text-secondary">이메일</dt>
-        <dd class="break-all text-text-primary">{{ inquiry.email }}</dd>
+        <dd class="break-all text-text-primary">
+          {{ inquiry.email ?? '(보관기간 만료)' }}
+        </dd>
       </div>
       <div class="flex gap-3">
         <dt class="w-20 shrink-0 font-medium text-text-secondary">제목</dt>
@@ -55,6 +57,17 @@ const selectClass =
       <div class="flex gap-3">
         <dt class="w-20 shrink-0 font-medium text-text-secondary">내용</dt>
         <dd class="whitespace-pre-wrap break-words text-text-primary">{{ inquiry.content }}</dd>
+      </div>
+      <div class="flex gap-3">
+        <dt class="w-20 shrink-0 font-medium text-text-secondary">개인정보</dt>
+        <dd class="text-text-primary">
+          <template v-if="inquiry.privacyConsent">
+            동의함<span v-if="inquiry.privacyConsentAt" class="text-text-muted">
+              · {{ formatDateYYYYMMDD(inquiry.privacyConsentAt) }}</span
+            >
+          </template>
+          <span v-else class="text-warning">미동의</span>
+        </dd>
       </div>
       <div class="flex gap-3">
         <dt class="w-20 shrink-0 font-medium text-text-secondary">등록일</dt>
