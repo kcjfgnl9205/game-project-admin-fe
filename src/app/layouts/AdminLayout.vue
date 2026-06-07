@@ -14,9 +14,9 @@ const route = useRoute()
 const titleMap: Record<string, string> = {
   [ROUTE_NAME.DASHBOARD]: '대시보드',
   [ROUTE_NAME.NOTICE]: '공지사항',
-  [ROUTE_NAME.SKETCH_PIC_ROOM]: '스케치픽 · 방정보',
-  [ROUTE_NAME.SKETCH_PIC_WORDS]: '스케치픽 · 단어 설정',
-  [ROUTE_NAME.WHO_DREW_WORDS]: '누가그렸지 · 단어 설정',
+  [ROUTE_NAME.SKETCH_PIC_ROOM]: '그림 맞추기 · 방정보',
+  [ROUTE_NAME.SKETCH_PIC_WORDS]: '그림 맞추기 · 단어 설정',
+  [ROUTE_NAME.WHO_DREW_WORDS]: '그림 마피아 · 단어 설정',
   [ROUTE_NAME.INQUIRY_CATEGORIES]: '문의 · 카테고리 관리',
   [ROUTE_NAME.INQUIRY_LIST]: '문의 · 목록',
 }

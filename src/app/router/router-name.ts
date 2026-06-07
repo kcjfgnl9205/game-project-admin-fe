@@ -3,11 +3,11 @@ export const ROUTE_NAME = {
   DASHBOARD: 'dashboard',
   NOTICE: 'notice',
 
-  // 스케치픽
+  // 그림 맞추기
   SKETCH_PIC_ROOM: 'sketch-pic-room',
   SKETCH_PIC_WORDS: 'sketch-pic-words',
 
-  // 누가그렸지
+  // 그림 마피아
   WHO_DREW_WORDS: 'who-drew-words',
 
   // 문의 관리

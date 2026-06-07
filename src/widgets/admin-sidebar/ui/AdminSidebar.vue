@@ -24,7 +24,7 @@ const items: MenuItem[] = [
     key: 'games',
     children: [
       {
-        label: '스케치픽',
+        label: '그림 맞추기',
         key: 'sketch-pic',
         children: [
           { label: '방정보', routeName: ROUTE_NAME.SKETCH_PIC_ROOM },
@@ -32,7 +32,7 @@ const items: MenuItem[] = [
         ],
       },
       {
-        label: '누가그렸지',
+        label: '그림 마피아',
         key: 'who-drew',
         children: [{ label: '단어 설정', routeName: ROUTE_NAME.WHO_DREW_WORDS }],
       },

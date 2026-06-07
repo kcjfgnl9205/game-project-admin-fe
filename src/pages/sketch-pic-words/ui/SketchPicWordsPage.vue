@@ -68,7 +68,7 @@ const onDelete = async (word: SketchPicWord) => {
   <div class="space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h2 class="text-2xl font-semibold text-text-primary">스케치픽 단어 관리</h2>
+        <h2 class="text-2xl font-semibold text-text-primary">그림 맞추기 단어 관리</h2>
         <p class="mt-1 text-sm text-text-secondary">게임에 사용할 단어를 관리하세요.</p>
       </div>
       <div class="flex gap-2">

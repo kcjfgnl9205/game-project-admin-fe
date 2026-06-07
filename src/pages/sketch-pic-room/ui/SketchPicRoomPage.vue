@@ -3,7 +3,7 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-semibold text-text-primary">스케치픽 방 정보</h2>
+      <h2 class="text-2xl font-semibold text-text-primary">그림 맞추기 방 정보</h2>
       <p class="mt-1 text-sm text-text-secondary">방 설정 화면 (작업 예정)</p>
     </div>
 

@@ -68,7 +68,7 @@ const onDelete = async (pair: WhoDrewWordPair) => {
   <div class="space-y-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h2 class="text-2xl font-semibold text-text-primary">누가그렸지 단어쌍 관리</h2>
+        <h2 class="text-2xl font-semibold text-text-primary">그림 마피아 단어쌍 관리</h2>
         <p class="mt-1 text-sm text-text-secondary">
           일반인 단어 / 마피아 단어 쌍을 관리하세요. (마피아는 헷갈리는 관련 단어를 받습니다)
         </p>
