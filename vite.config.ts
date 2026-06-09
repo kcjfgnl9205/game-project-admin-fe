@@ -26,7 +26,7 @@ export default defineConfig({
     https: hasCert ? { key: readFileSync(keyPath), cert: readFileSync(certPath) } : undefined,
     proxy: {
       '/api': {
-        target: 'https://dev-api.puzmu.com/api',
+        target: 'https://dev-api.nolmoa.com/api',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
