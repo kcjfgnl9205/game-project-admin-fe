@@ -13,15 +13,15 @@ export const fetchNotice = async (id: string) => {
 }
 
 export const createNotice = async (input: NoticeRequest) => {
-  const { data } = await http.post<Notice>('/notices', input)
+  const { data } = await http.post<Notice>('/admin/notices', input)
   return data
 }
 
 export const updateNotice = async (id: string, input: NoticeUpdateRequest) => {
-  const { data } = await http.patch<Notice>(`/notices/${id}`, input)
+  const { data } = await http.patch<Notice>(`/admin/notices/${id}`, input)
   return data
 }
 
 export const deleteNotice = async (id: string) => {
-  await http.delete(`/notices/${id}`)
+  await http.delete(`/admin/notices/${id}`)
 }
