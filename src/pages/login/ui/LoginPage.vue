@@ -41,7 +41,7 @@ const handleSubmit = async () => {
             required
             class="w-full rounded-3xl border border-border bg-bg px-4 py-4 text-base text-text-primary outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20"
             autocomplete="email"
-            placeholder="admin@puzmu.com"
+            placeholder="admin@nolmoa.com"
           />
         </div>
 

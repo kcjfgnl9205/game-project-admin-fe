@@ -6,7 +6,7 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwind from '@tailwindcss/vite'
 
-const DEV_DOMAIN = 'local.puzmu.com'
+const DEV_DOMAIN = 'local.nolmoa.com'
 const keyPath = fileURLToPath(new URL(`./.certs/${DEV_DOMAIN}-key.pem`, import.meta.url))
 const certPath = fileURLToPath(new URL(`./.certs/${DEV_DOMAIN}.pem`, import.meta.url))
 const hasCert = existsSync(keyPath) && existsSync(certPath)

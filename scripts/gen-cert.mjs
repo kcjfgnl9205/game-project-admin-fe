@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const CERT_DIR = resolve(__dirname, '..', '.certs')
-const DOMAIN = 'local.puzmu.com'
+const DOMAIN = 'local.nolmoa.com'
 
 const check = spawnSync('mkcert', ['-version'], { stdio: 'ignore' })
 if (check.status !== 0) {
